@@ -20,10 +20,10 @@ public class FeedbackController {
     // POST /events/{eventId}/feedback - Submit feedback for an event
     @PostMapping
     public ResponseEntity<FeedbackResponse> submitFeedback(
-            @PathVariable long id,
+            @PathVariable long eventId,
             @RequestBody FeedbackRequest request) {
 
-        FeedbackResponse response = feedbackService.submitFeedback(id, request);
+        FeedbackResponse response = feedbackService.submitFeedback(eventId, request);
         if (response == null) {
             return ResponseEntity.notFound().build(); // Event not found
         }
@@ -32,8 +32,8 @@ public class FeedbackController {
 
     // GET /events/{eventId}/feedback - Get all feedback for an event
     @GetMapping
-    public ResponseEntity<List<FeedbackResponse>> getEventFeedback(@PathVariable long id) {
-        List<FeedbackResponse> feedback = feedbackService.getFeedbacksById(id);
+    public ResponseEntity<List<FeedbackResponse>> getEventFeedback(@PathVariable long eventId) {
+        List<FeedbackResponse> feedback = feedbackService.getFeedbacksById(eventId);
         return ResponseEntity.ok(feedback);
     }
 }
