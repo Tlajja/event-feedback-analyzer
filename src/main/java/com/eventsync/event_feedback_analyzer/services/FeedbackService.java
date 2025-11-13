@@ -44,7 +44,7 @@ public class FeedbackService {
     public List<FeedbackResponse> getFeedbacksById(long id) {
         Event event = eventService.getEventById(id);
         if (event == null)
-            return null;
+            return List.of();
         return event.getFeedbackList()
                 .stream()
                 .map(this::convertToFeedbackResponse)

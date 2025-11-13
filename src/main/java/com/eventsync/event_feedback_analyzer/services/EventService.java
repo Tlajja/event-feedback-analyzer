@@ -78,7 +78,7 @@ public class EventService {
                 event.getName(),
                 totalFeedback,
                 positiveCount,
-                negativeCount,
-                neutralCount);
+                neutralCount,
+                negativeCount);
     }
 }
