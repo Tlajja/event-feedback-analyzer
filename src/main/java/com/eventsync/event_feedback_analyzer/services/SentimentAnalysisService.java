@@ -1,11 +1,45 @@
 package com.eventsync.event_feedback_analyzer.services;
 
+import java.util.HashMap;
+import java.util.Map;
+
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
+import org.springframework.http.ResponseEntity;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import jakarta.annotation.PostConstruct;
 
 import com.eventsync.event_feedback_analyzer.enums.Sentiment;
 
 @Service
 public class SentimentAnalysisService {
+    @Value("${HUGGINGFACE_API_TOKEN:${huggingface.api.token}}")
+    private String apiToken;
+
+    @Value("${huggingface.api.url:https://router.huggingface.co/hf-inference/models/cardiffnlp/twitter-roberta-base-sentiment-latest}")
+    private String apiUrl;
+
+    @PostConstruct
+    public void init() {
+        System.out.println("API Key loaded: "
+                + (apiToken != null && !apiToken.isEmpty() ? "YES (length: " + apiToken.length() + ")"
+                        : "NO - EMPTY!"));
+        System.out.println("API URL: " + apiUrl);
+    }
+
+    private final RestTemplate restTemplate;
+    private final ObjectMapper objectMapper;
+
+    public SentimentAnalysisService() {
+        this.restTemplate = new RestTemplate();
+        this.objectMapper = new ObjectMapper();
+    }
 
     public static class SentimentAnalysisResult {
         private Sentiment sentiment;
@@ -39,7 +73,65 @@ public class SentimentAnalysisService {
     }
 
     public SentimentAnalysisResult analyzeSentiment(String text) {
-        // TODO: Call the sentiment analysis API and get the sentiment and scores
-        return new SentimentAnalysisResult(Sentiment.POSITIVE, 0.8, 0.1, 0.1);
+        try {
+            HttpHeaders headers = new HttpHeaders();
+            headers.set("Authorization", "Bearer " + apiToken);
+            headers.set("Content-Type", "application/json");
+            headers.set("Accept", "application/json");
+
+            Map<String, String> requestBody = new HashMap<>();
+            requestBody.put("inputs", text);
+
+            HttpEntity<Map<String, String>> request = new HttpEntity<>(requestBody, headers);
+
+            ResponseEntity<String> responseEntity = restTemplate.postForEntity(apiUrl, request, String.class);
+
+            String response = responseEntity.getBody();
+
+            System.out.println("API Response: " + response);
+
+            return parseHuggingFaceResponse(response);
+        } catch (Exception e) {
+            System.err.println("Error calling Hugging Face API: " + e.getMessage());
+            e.printStackTrace();
+            return new SentimentAnalysisResult(Sentiment.NEUTRAL, 0.2, 0.5, 0.1);
+        }
+    }
+
+    public SentimentAnalysisResult parseHuggingFaceResponse(String responseBody) throws Exception {
+        JsonNode root = objectMapper.readTree(responseBody);
+        JsonNode results = root.get(0);
+
+        double positiveScore = 0.0;
+        double negativeScore = 0.0;
+        double neutralScore = 0.0;
+
+        for (JsonNode result : results) {
+            String label = result.get("label").asText().toLowerCase();
+            double score = result.get("score").asDouble();
+
+            switch (label) {
+                case "positive":
+                    positiveScore = score;
+                    break;
+                case "negative":
+                    negativeScore = score;
+                    break;
+                case "neutral":
+                    neutralScore = score;
+                    break;
+            }
+        }
+
+        Sentiment sentiment;
+        if (positiveScore > negativeScore && positiveScore > neutralScore) {
+            sentiment = Sentiment.POSITIVE;
+        } else if (negativeScore > positiveScore && negativeScore > neutralScore) {
+            sentiment = Sentiment.NEGATIVE;
+        } else {
+            sentiment = Sentiment.NEUTRAL;
+        }
+        return new SentimentAnalysisResult(sentiment, positiveScore, neutralScore, negativeScore);
+
     }
 }
