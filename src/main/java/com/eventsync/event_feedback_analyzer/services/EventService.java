@@ -5,35 +5,37 @@ import org.springframework.stereotype.Service;
 import com.eventsync.event_feedback_analyzer.dtos.*;
 import com.eventsync.event_feedback_analyzer.enums.Sentiment;
 import com.eventsync.event_feedback_analyzer.models.*;
+import com.eventsync.event_feedback_analyzer.repositories.EventRepository;
 
 import java.util.List;
-import java.util.ArrayList;
 
 @Service
 public class EventService {
-    private final List<Event> events = new ArrayList<>();
-    private long eventIdCounter = 1;
+    private final EventRepository eventRepository;
+
+    public EventService(EventRepository eventRepository) {
+        this.eventRepository = eventRepository;
+    }
 
     public EventResponse createEvent(CreateEventRequest request) {
-        long newId = eventIdCounter++;
-        Event event = new Event(newId, request.getName(), request.getDescription());
-        events.add(event);
-        return convertToEventResponse(event);
+        Event event = new Event();
+        event.setName(request.getName());
+        event.setDescription(request.getDescription());
+
+        Event savedEvent = eventRepository.save(event);
+
+        return convertToEventResponse(savedEvent);
     }
 
     public List<EventResponse> getAllEvents() {
-        return events
+        return eventRepository.findAll()
                 .stream()
                 .map(this::convertToEventResponse)
                 .toList();
     }
 
     public Event getEventById(long id) {
-        return events
-                .stream()
-                .filter(e -> e.getId() == id)
-                .findFirst()
-                .orElse(null);
+        return eventRepository.findById(id).orElse(null);
     }
 
     public EventResponse getEventResponseById(long id) {
