@@ -1,8 +1,8 @@
 package com.eventsync.event_feedback_analyzer.dtos;
 
 public class EventSummaryResponse {
-    private String eventName;
     private long eventId;
+    private String eventName;
     private int totalFeedback;
     private int totalPositiveFeedback;
     private int totalNegativeFeedback;
@@ -12,10 +12,10 @@ public class EventSummaryResponse {
     public EventSummaryResponse() {
     }
 
-    public EventSummaryResponse(String eventName, long eventId, int totalFeedback, int totalPositiveFeedback,
+    public EventSummaryResponse(long eventId, String eventName, int totalFeedback, int totalPositiveFeedback,
             int totalNegativeFeedback, int totalNeutralFeedback) {
-        this.eventName = eventName;
         this.eventId = eventId;
+        this.eventName = eventName;
         this.totalFeedback = totalFeedback;
         this.totalPositiveFeedback = totalPositiveFeedback;
         this.totalNegativeFeedback = totalNegativeFeedback;

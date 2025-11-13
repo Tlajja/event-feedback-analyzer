@@ -2,24 +2,24 @@ package com.eventsync.event_feedback_analyzer.dtos;
 
 import java.time.LocalDateTime;
 
-public class EventRespone {
+public class EventResponse {
     private long id;
     private String name;
     private String description;
     private LocalDateTime createdAt;
-    private int FeedbackCount;
+    private int feedbackCount;
 
     // Constructors
 
-    public EventRespone() {
+    public EventResponse() {
     }
 
-    public EventRespone(long id, String name, String description, LocalDateTime createdAt, int FeedbackCount) {
+    public EventResponse(long id, String name, String description, LocalDateTime createdAt, int feedbackCount) {
         this.id = id;
         this.name = name;
         this.description = description;
         this.createdAt = createdAt;
-        this.FeedbackCount = FeedbackCount;
+        this.feedbackCount = feedbackCount;
     }
 
     // Getters and Setters
@@ -44,9 +44,8 @@ public class EventRespone {
         return description;
     }
 
-    public String setDescription(String description) {
+    public void setDescription(String description) {
         this.description = description;
-        return description;
     }
 
     public LocalDateTime getCreatedAt() {
@@ -58,10 +57,10 @@ public class EventRespone {
     }
 
     public int getFeedbackCount() {
-        return FeedbackCount;
+        return feedbackCount;
     }
 
-    public void setFeedbackCount(int FeedbackCount) {
-        this.FeedbackCount = FeedbackCount;
+    public void setFeedbackCount(int feedbackCount) {
+        this.feedbackCount = feedbackCount;
     }
 }
