@@ -5,7 +5,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 
 import com.eventsync.event_feedback_analyzer.services.SentimentAnalysisService;
-import com.eventsync.event_feedback_analyzer.services.SentimentAnalysisService.SentimentAnalysisResult;
 
 @SpringBootTest
 class EventFeedbackAnalyzerApplicationTests {
