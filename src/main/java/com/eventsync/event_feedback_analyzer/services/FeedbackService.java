@@ -22,8 +22,6 @@ public class FeedbackService {
 
     public FeedbackResponse submitFeedback(long id, FeedbackRequest request) {
         Event event = eventService.getEventById(id);
-        if (event == null)
-            return null;
 
         SentimentAnalysisService.SentimentAnalysisResult sentimentResult = sentimentAnalysisService
                 .analyzeSentiment(request.getContent());
@@ -37,9 +35,8 @@ public class FeedbackService {
         feedback.setNegativeScore(sentimentResult.getNegativeScore());
 
         Feedback savedFeedback = feedbackRepository.save(feedback);
-        event.addFeedback(savedFeedback);
 
-        return convertToFeedbackResponse(feedback);
+        return convertToFeedbackResponse(savedFeedback);
     }
 
     public List<FeedbackResponse> getFeedbacksById(Long id) {

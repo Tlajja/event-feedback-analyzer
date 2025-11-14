@@ -1,8 +1,12 @@
 package com.eventsync.event_feedback_analyzer.controllers;
 
 import org.springframework.web.bind.annotation.*;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import com.eventsync.event_feedback_analyzer.services.FeedbackService;
+
+import jakarta.validation.Valid;
+
 import com.eventsync.event_feedback_analyzer.dtos.*;
 
 import java.util.List;
@@ -21,13 +25,10 @@ public class FeedbackController {
     @PostMapping
     public ResponseEntity<FeedbackResponse> submitFeedback(
             @PathVariable long eventId,
-            @RequestBody FeedbackRequest request) {
+            @Valid @RequestBody FeedbackRequest request) {
 
         FeedbackResponse response = feedbackService.submitFeedback(eventId, request);
-        if (response == null) {
-            return ResponseEntity.notFound().build(); // Event not found
-        }
-        return ResponseEntity.ok(response);
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
     // GET /events/{eventId}/feedback - Get all feedback for an event

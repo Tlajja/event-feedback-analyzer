@@ -4,6 +4,7 @@ import org.springframework.stereotype.Service;
 
 import com.eventsync.event_feedback_analyzer.dtos.*;
 import com.eventsync.event_feedback_analyzer.enums.Sentiment;
+import com.eventsync.event_feedback_analyzer.exceptions.ResourceNotFoundException;
 import com.eventsync.event_feedback_analyzer.models.*;
 import com.eventsync.event_feedback_analyzer.repositories.EventRepository;
 
@@ -35,12 +36,13 @@ public class EventService {
     }
 
     public Event getEventById(long id) {
-        return eventRepository.findById(id).orElse(null);
+        return eventRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Event", "id", id));
     }
 
     public EventResponse getEventResponseById(long id) {
         Event event = getEventById(id);
-        return event != null ? convertToEventResponse(event) : null;
+        return convertToEventResponse(event);
     }
 
     public EventResponse convertToEventResponse(Event event) {
@@ -54,10 +56,6 @@ public class EventService {
 
     public EventSummaryResponse getEventSummary(long id) {
         Event event = getEventById(id);
-
-        if (event == null) {
-            return null;
-        }
 
         int positiveCount = 0;
         int negativeCount = 0;
@@ -80,7 +78,7 @@ public class EventService {
                 event.getName(),
                 totalFeedback,
                 positiveCount,
-                neutralCount,
-                negativeCount);
+                negativeCount,
+                neutralCount);
     }
 }

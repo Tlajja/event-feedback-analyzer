@@ -1,6 +1,12 @@
 package com.eventsync.event_feedback_analyzer.dtos;
 
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
+
 public class FeedbackRequest {
+
+    @NotBlank
+    @Size(max = 2000, message = "Feedback content must not exceed 2000 characters")
     public String content;
 
     // Constructors

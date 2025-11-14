@@ -5,6 +5,7 @@ import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.HttpEntity;
@@ -13,9 +14,8 @@ import org.springframework.http.HttpHeaders;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import jakarta.annotation.PostConstruct;
-
 import com.eventsync.event_feedback_analyzer.enums.Sentiment;
+import com.eventsync.event_feedback_analyzer.exceptions.SentimentAnalysisException;
 
 @Service
 public class SentimentAnalysisService {
@@ -24,14 +24,6 @@ public class SentimentAnalysisService {
 
     @Value("${huggingface.api.url:https://router.huggingface.co/hf-inference/models/cardiffnlp/twitter-roberta-base-sentiment-latest}")
     private String apiUrl;
-
-    @PostConstruct
-    public void init() {
-        System.out.println("API Key loaded: "
-                + (apiToken != null && !apiToken.isEmpty() ? "YES (length: " + apiToken.length() + ")"
-                        : "NO - EMPTY!"));
-        System.out.println("API URL: " + apiUrl);
-    }
 
     private final RestTemplate restTemplate;
     private final ObjectMapper objectMapper;
@@ -73,6 +65,14 @@ public class SentimentAnalysisService {
     }
 
     public SentimentAnalysisResult analyzeSentiment(String text) {
+        if (text == null || text.trim().isEmpty()) {
+            throw new IllegalArgumentException("Text for sentiment analysis cannot be null or empty");
+        }
+
+        if (apiToken == null || apiToken.isEmpty()) {
+            throw new SentimentAnalysisException("Hugging Face API token is not configured");
+        }
+
         try {
             HttpHeaders headers = new HttpHeaders();
             headers.set("Authorization", "Bearer " + apiToken);
@@ -86,52 +86,66 @@ public class SentimentAnalysisService {
 
             ResponseEntity<String> responseEntity = restTemplate.postForEntity(apiUrl, request, String.class);
 
+            if (responseEntity.getBody() == null) {
+                throw new SentimentAnalysisException("Received empty response from sentiment analysis API");
+            }
+
             String response = responseEntity.getBody();
 
-            System.out.println("API Response: " + response);
-
             return parseHuggingFaceResponse(response);
+        } catch (RestClientException e) {
+            throw new SentimentAnalysisException("Failed to connect to sentiment analysis service", e);
         } catch (Exception e) {
-            System.err.println("Error calling Hugging Face API: " + e.getMessage());
-            e.printStackTrace();
-            return new SentimentAnalysisResult(Sentiment.NEUTRAL, 0.2, 0.5, 0.1);
+            throw new SentimentAnalysisException("Failed to analyze sentiment: " + e.getMessage(), e);
         }
     }
 
     public SentimentAnalysisResult parseHuggingFaceResponse(String responseBody) throws Exception {
-        JsonNode root = objectMapper.readTree(responseBody);
-        JsonNode results = root.get(0);
+        try {
+            JsonNode root = objectMapper.readTree(responseBody);
 
-        double positiveScore = 0.0;
-        double negativeScore = 0.0;
-        double neutralScore = 0.0;
-
-        for (JsonNode result : results) {
-            String label = result.get("label").asText().toLowerCase();
-            double score = result.get("score").asDouble();
-
-            switch (label) {
-                case "positive":
-                    positiveScore = score;
-                    break;
-                case "negative":
-                    negativeScore = score;
-                    break;
-                case "neutral":
-                    neutralScore = score;
-                    break;
+            if (!root.isArray() || root.size() == 0) {
+                throw new SentimentAnalysisException("Invalid response format from sentiment analysis API");
             }
-        }
 
-        Sentiment sentiment;
-        if (positiveScore > negativeScore && positiveScore > neutralScore) {
-            sentiment = Sentiment.POSITIVE;
-        } else if (negativeScore > positiveScore && negativeScore > neutralScore) {
-            sentiment = Sentiment.NEGATIVE;
-        } else {
-            sentiment = Sentiment.NEUTRAL;
-        }
-        return new SentimentAnalysisResult(sentiment, positiveScore, neutralScore, negativeScore);
+            JsonNode results = root.get(0);
 
+            double positiveScore = 0.0;
+            double negativeScore = 0.0;
+            double neutralScore = 0.0;
+
+            for (JsonNode result : results) {
+                if (!result.has("label") || !result.has("score")) {
+                    throw new SentimentAnalysisException("Missing required fields in API response");
+                }
+
+                String label = result.get("label").asText().toLowerCase();
+                double score = result.get("score").asDouble();
+
+                switch (label) {
+                    case "positive":
+                        positiveScore = score;
+                        break;
+                    case "negative":
+                        negativeScore = score;
+                        break;
+                    case "neutral":
+                        neutralScore = score;
+                        break;
+                }
+            }
+
+            Sentiment sentiment;
+            if (positiveScore > negativeScore && positiveScore > neutralScore) {
+                sentiment = Sentiment.POSITIVE;
+            } else if (negativeScore > positiveScore && negativeScore > neutralScore) {
+                sentiment = Sentiment.NEGATIVE;
+            } else {
+                sentiment = Sentiment.NEUTRAL;
+            }
+            return new SentimentAnalysisResult(sentiment, positiveScore, neutralScore, negativeScore);
+        } catch (Exception e) {
+            throw new SentimentAnalysisException("Failed to parse sentiment analysis response", e);
+        }
     }
 }

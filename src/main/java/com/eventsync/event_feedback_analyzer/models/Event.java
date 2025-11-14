@@ -38,7 +38,7 @@ public class Event {
     }
 
     // Getters and Setters
-    public long getId() {
+    public Long getId() {
         return id;
     }
 
@@ -91,7 +91,7 @@ public class Event {
                 ", name='" + name + '\'' +
                 ", description='" + description + '\'' +
                 ", createdAt=" + createdAt +
-                ", feedbackList=" + feedbackList +
+                ", feedbackCount=" + feedbackList.size() +
                 '}';
     }
 }

@@ -75,21 +75,21 @@ public class EventSummaryResponse {
     // Helper methods for percentages
 
     public double getPositivePercentage() {
-        if (totalPositiveFeedback == 0) {
+        if (totalFeedback == 0) {
             return 0.0;
         }
         return (double) totalPositiveFeedback / totalFeedback * 100;
     }
 
     public double getNegativePercentage() {
-        if (totalNegativeFeedback == 0) {
+        if (totalFeedback == 0) {
             return 0.0;
         }
         return (double) totalNegativeFeedback / totalFeedback * 100;
     }
 
     public double getNeutralPercentage() {
-        if (totalNeutralFeedback == 0) {
+        if (totalFeedback == 0) {
             return 0.0;
         }
         return (double) totalNeutralFeedback / totalFeedback * 100;

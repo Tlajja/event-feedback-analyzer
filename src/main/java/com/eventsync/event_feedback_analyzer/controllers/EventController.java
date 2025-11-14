@@ -1,10 +1,14 @@
 package com.eventsync.event_feedback_analyzer.controllers;
 
 import com.eventsync.event_feedback_analyzer.services.EventService;
+
+import jakarta.validation.Valid;
+
 import com.eventsync.event_feedback_analyzer.dtos.*;
 
 import org.springframework.web.bind.annotation.*;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.HttpStatus;
 
 import java.util.List;
 
@@ -19,9 +23,9 @@ public class EventController {
 
     // POST /events - Create new event
     @PostMapping
-    public ResponseEntity<EventResponse> createEvent(@RequestBody CreateEventRequest request) {
+    public ResponseEntity<EventResponse> createEvent(@Valid @RequestBody CreateEventRequest request) {
         EventResponse eventResponse = eventService.createEvent(request);
-        return ResponseEntity.ok(eventResponse);
+        return ResponseEntity.status(HttpStatus.CREATED).body(eventResponse);
     }
 
     // Get /events - Get all events
@@ -35,14 +39,13 @@ public class EventController {
     @GetMapping("/{id}")
     public ResponseEntity<EventResponse> getEventById(@PathVariable long id) {
         EventResponse eventResponse = eventService.getEventResponseById(id);
-        return eventResponse != null ? ResponseEntity.ok(eventResponse) : ResponseEntity.notFound().build();
+        return ResponseEntity.ok(eventResponse);
     }
 
     // Get /events/{id}/summary - Get event summary by id
     @GetMapping("/{id}/summary")
     public ResponseEntity<EventSummaryResponse> getEventSummary(@PathVariable long id) {
         EventSummaryResponse eventSummaryResponse = eventService.getEventSummary(id);
-        return eventSummaryResponse != null ? ResponseEntity.ok(eventSummaryResponse)
-                : ResponseEntity.notFound().build();
+        return ResponseEntity.ok(eventSummaryResponse);
     }
 }
