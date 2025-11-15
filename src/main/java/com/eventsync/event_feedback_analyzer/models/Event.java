@@ -30,9 +30,9 @@ public class Event {
         this.createdAt = LocalDateTime.now();
     }
 
-    public Event(Long Id, String name, String description) {
+    public Event(Long id, String name, String description) {
         this();
-        this.id = Id;
+        this.id = id;
         this.name = name;
         this.description = description;
     }

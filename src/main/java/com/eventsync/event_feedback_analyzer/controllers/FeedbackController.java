@@ -24,7 +24,7 @@ public class FeedbackController {
     // POST /events/{eventId}/feedback - Submit feedback for an event
     @PostMapping
     public ResponseEntity<FeedbackResponse> submitFeedback(
-            @PathVariable long eventId,
+            @PathVariable Long eventId,
             @Valid @RequestBody FeedbackRequest request) {
 
         FeedbackResponse response = feedbackService.submitFeedback(eventId, request);
@@ -33,7 +33,7 @@ public class FeedbackController {
 
     // GET /events/{eventId}/feedback - Get all feedback for an event
     @GetMapping
-    public ResponseEntity<List<FeedbackResponse>> getEventFeedback(@PathVariable long eventId) {
+    public ResponseEntity<List<FeedbackResponse>> getEventFeedback(@PathVariable Long eventId) {
         List<FeedbackResponse> feedback = feedbackService.getFeedbacksById(eventId);
         return ResponseEntity.ok(feedback);
     }

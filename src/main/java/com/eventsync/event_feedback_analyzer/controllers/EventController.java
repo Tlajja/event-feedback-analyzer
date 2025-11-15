@@ -37,14 +37,14 @@ public class EventController {
 
     // Get /events/{id} - Get event by id
     @GetMapping("/{id}")
-    public ResponseEntity<EventResponse> getEventById(@PathVariable long id) {
+    public ResponseEntity<EventResponse> getEventById(@PathVariable Long id) {
         EventResponse eventResponse = eventService.getEventResponseById(id);
         return ResponseEntity.ok(eventResponse);
     }
 
     // Get /events/{id}/summary - Get event summary by id
     @GetMapping("/{id}/summary")
-    public ResponseEntity<EventSummaryResponse> getEventSummary(@PathVariable long id) {
+    public ResponseEntity<EventSummaryResponse> getEventSummary(@PathVariable Long id) {
         EventSummaryResponse eventSummaryResponse = eventService.getEventSummary(id);
         return ResponseEntity.ok(eventSummaryResponse);
     }

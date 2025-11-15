@@ -5,9 +5,9 @@ import jakarta.validation.constraints.Size;
 
 public class FeedbackRequest {
 
-    @NotBlank
+    @NotBlank(message = "Feedback content is required")
     @Size(max = 2000, message = "Feedback content must not exceed 2000 characters")
-    public String content;
+    private String content;
 
     // Constructors
 

@@ -11,7 +11,7 @@ import java.time.LocalDateTime;
 public class Feedback {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+    private Long id;
 
     @Column(nullable = false, length = 2000)
     private String content;
@@ -41,7 +41,7 @@ public class Feedback {
         this.createdAt = LocalDateTime.now();
     }
 
-    public Feedback(long id, String content, LocalDateTime createdAt, Event event) {
+    public Feedback(Long id, String content, LocalDateTime createdAt, Event event) {
         this();
         this.id = id;
         this.content = content;
@@ -50,11 +50,11 @@ public class Feedback {
 
     // Getters and setters
 
-    public long getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(long id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
