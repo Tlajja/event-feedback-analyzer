@@ -68,7 +68,7 @@ Navigate to the repository and in the terminal run:
 1. **Web Interface:** Open http://localhost:8080 in your browser
 2. **API Endpoints:** Base URL is http://localhost:8080
 3. **H2 Console:** http://localhost:8080/h2-console (for database inspection)
-   - JDBC URL: `jdbc:h2:mem:eventsync`
+   - JDBC URL: `jdbc:h2:mem:eventdb`
    - Username: `sa`
    - Password: (leave empty)
 
