@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EventSync</title>
+    <link rel="stylesheet" href="css/index.css">
+</head>
+
+<body>
+    <h1>EventSync</h1>
+
+    <!-- Create Event -->
+    <div id="createSection" class="section">
+        <h2>Create Event</h2>
+        <input type="text" id="eventName" placeholder="Event Name" maxlength="255">
+        <textarea id="eventDesc" placeholder="Description (optional)" rows="3" maxlength="1000"></textarea>
+        <button onclick="addEvent()">Create Event</button>
+        <div id="createMessage" class="hidden"></div>
+    </div>
+
+    <!-- Events List -->
+    <div id="eventsSection" class="section">
+        <h2>All Events</h2>
+        <div id="eventsList">Loading...</div>
+    </div>
+
+    <!-- Event Details -->
+    <div id="detailsSection" class="section hidden">
+        <button onclick="showEventsList()">← Back</button>
+        <h2 id="eventTitle"></h2>
+        <p id="eventDescription"></p>
+
+        <h3>Summary</h3>
+        <p id="summary"></p>
+
+        <h3>Add Feedback</h3>
+        <textarea id="feedbackContent" placeholder="Your feedback..." rows="4" maxlength="2000"></textarea>
+        <button onclick="submitFeedback()">Submit</button>
+        <div id="feedbackMessage" class="hidden"></div>
+
+        <h3>Feedback</h3>
+        <select id="filterSentiment" onchange="filterFeedback()">
+            <option value="ALL">All</option>
+            <option value="POSITIVE">Positive</option>
+            <option value="NEUTRAL">Neutral</option>
+            <option value="NEGATIVE">Negative</option>
+        </select>
+        <div id="feedbackList"></div>
+    </div>
+
+    <script src="js/script.js"></script>
+</body>
+
+</html>
