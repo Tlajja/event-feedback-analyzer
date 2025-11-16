@@ -15,7 +15,7 @@ Streamline your event management with automated feedback analysis. This platform
 ---
 
 ## Tech Stack
-- **Backend:** Java 17+ with Spring Boot
+- **Backend:** Java 21 with Spring Boot
 - **Database:** H2 In-Memory Database
 - **AI Service:** Hugging Face Inference API (cardiffnlp/twitter-roberta-base-sentiment-latest)
 - **Frontend:** HTML, CSS, JavaScript
@@ -24,7 +24,7 @@ Streamline your event management with automated feedback analysis. This platform
 ---
 
 ## Prerequisites
-1. **Java 17 or higher** 
+1. **Java 17 or 21** 
    - Check with: `java --version`
    - Download from: [Oracle JDK](https://www.oracle.com/java/technologies/javase/jdk17-archive-downloads.html)
 
@@ -48,8 +48,8 @@ cd event-feedback-analyzer
 9. **Copy your token** - it will look like: `hf_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx`
 
 ### Step 3: Configure API Token
-Navigate to and open `src/main/resources/application.properties` 
-Replace `YOUR_HUGGINGFACE_API_TOKEN` with your Hugging Face token:
+1. Navigate to and open `src/main/resources/application.properties` 
+2. Replace `YOUR_HUGGINGFACE_API_TOKEN` with your Hugging Face token:
 ```
 huggingface.api.token=YOUR_HUGGINGFACE_API_TOKEN
 ```
@@ -148,6 +148,48 @@ event-feedback-analyzer
 ```
 
 ---
+## Troubleshooting 
+**Issue:** "Port 8080 already in use" <br>
+**Solution:**
+  - Kill the process that is using port 8080
+  - Or change the port in application.properties: server.port=8081 (or any other free port)
 
+
+**Issue:** Sentiment Analysis fails <br>
+**Solution:**
+  - Check if your Hugging Face API token is correctly configured
+  - Verify the token has "Read" permissions
+  - Check application logs for API errors
+
+
+**Issue:** Application gives error while building <br>
+**Solution:** 
+- This project requires **Java 17 or Java 21** (Java 25 is not supported)
+- Check your Java version: `java --version`
+- Download Java 17: [Eclipse Temurin](https://adoptium.net/temurin/releases/?version=17)
+- Set JAVA_HOME if needed:
+  ```bash
+  # Mac/Linux
+  export JAVA_HOME=$(/usr/lib/jvm -v 17)
+  
+  # Windows (PowerShell)
+  $env:JAVA_HOME = "C:\Program Files\Eclipse Adoptium\jdk-17.x.x"
+  ```
+- Clean and rebuild: `./gradlew clean build`
+
+**Issue:** Application crashes on startup <br>
+**Solution:**
+- Verify your Hugging Face API token is set in `application.properties`
+- Check console logs for specific error messages
+- Ensure H2 database can be created (check file permissions)
+
+  
+**Issue:** "Hugging Face API token is not configured" <br>
+**Solution:**
+- Verify your token is correctly set in `src/main/resources/application.properties`:
+  ```properties
+  huggingface.api.token=hf_xxxxxxxxxxxxxxxxxxxxx
+  ```
+- Make sure there are no extra spaces or quotes around the token
+---  
 # Have Fun!
-
